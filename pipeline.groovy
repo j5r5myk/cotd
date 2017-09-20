@@ -29,7 +29,7 @@ node {
     }
     stage('Build Image') {
       sh """
-        ${env.OC_CMD} get pods -n cotd-dev
+        ${env.OC_CMD} get is -n cotd-dev
       """
     }
     
