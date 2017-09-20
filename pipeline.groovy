@@ -25,7 +25,7 @@ node {
     stage('SCM Checkout') {
       checkout scm
       //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
-      sh "orig=\$(pwd); git describe --tags; cd \$orig"
+      //sh "orig=\$(pwd); git describe --tags; cd \$orig"
     }
     stage('Build Image') {
       sh """
