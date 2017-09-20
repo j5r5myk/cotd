@@ -1,5 +1,7 @@
 #!/usr/bin/groovy
 
+String ocpApiServer = env.OCP_API_SERVER ? "${env.OCP_API_SERVER}" : "https://openshift.default.svc.cluster.local"
+
 node('master') {
 
   env.NAMESPACE = readFile('/var/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
@@ -18,13 +20,16 @@ node('master') {
 
 }
 
-
-
 node {
     echo 'Build cotd'
     stage('SCM Checkout') {
       checkout scm
       sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
+    }
+    stage('Build Image') {
+      sh """
+        {env.OC_CMD} get pods -n cotd-dev
+      """
     }
     
 }
