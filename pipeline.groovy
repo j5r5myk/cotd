@@ -36,17 +36,19 @@ node {
 }
 
 node {
-  stage('Verify deployment to ${env.STAGE1}')     
-  openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
-  input "Promote application to val?"
+  stage('Verify deployment to ${env.STAGE1}') {    
+    openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
+    input "Promote application to val?"
+  }
 }
 node {
   stage('Promote to ${env.STAGE2}')
 }
 
 node {
-  stage('Verify deployment to ${env.STAGE2}')
-  openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
+  stage('Verify deployment to ${env.STAGE2}') {
+    openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE2}", verifyReplicacount: true)
+  }
 }
 
 node {
