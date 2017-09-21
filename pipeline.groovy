@@ -30,7 +30,7 @@ node {
     stage('Build Image') {
       sh """
         ${env.OC_CMD} get builds
-        ${env.OC_CMD} start-build ${env.APP_NAME} --from-dir=oc-build --wait=true || exit 1
+        ${env.OC_CMD} start-build ${env.APP_NAME} --wait=true || exit 1
         ${env.OC_CMD} get builds
       """
     }
