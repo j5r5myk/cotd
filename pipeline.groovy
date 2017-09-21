@@ -11,7 +11,7 @@ node('master') {
   env.APP_NAME = "${env.JOB_NAME}".replaceAll(/-?pipeline-?/, '').replaceAll(/-?${env.NAMESPACE}-?/, '')
   def projectBase = "${env.NAMESPACE}".replaceAll(/-dev/, '')
   env.STAGE1 = "${projectBase}-dev"
-  env.STAGE2 = "${projectBase}-stage"
+  env.STAGE2 = "${projectBase}-val"
   env.STAGE3 = "${projectBase}-prod"
 
 //  sh(returnStdout: true, script: "${env.OC_CMD} get is jenkins-slave-image-mgmt --template=\'{{ .status.dockerImageRepository }}\' -n openshift > /tmp/jenkins-slave-image-mgmt.out")
@@ -21,30 +21,30 @@ node('master') {
 }
 
 node {
-    echo 'Building cotd'
-    stage('SCM Checkout') {
-      checkout scm
-      //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
-      //sh "orig=\$(pwd); git describe --tags; cd \$orig"
-    }
-    stage('Build Image') {
-      sh """
-        ${env.OC_CMD} get builds
-        ${env.OC_CMD} start-build ${env.APP_NAME} --wait=true || exit 1
-        ${env.OC_CMD} get builds
-      """
-    }
+  stage('SCM Checkout') {
+    checkout scm
+    //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
+  }
+  stage('Build Image') {
+    sh """
+      ${env.OC_CMD} get builds
+      ${env.OC_CMD} start-build ${env.APP_NAME} --wait=true || exit 1
+      ${env.OC_CMD} get builds
+    """
+  }
     
 }
 
 node {
-   echo 'Promote to val'
+  stage('Verify deployment to ${env.STAGE1}')     
+  openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
+  input "Promote application to val?"
 }
 
 node {
-    echo 'Run test'
+  echo 'Run test'
 }
 
 node {
-    echo 'Promote to prod'
+  echo 'Promote to prod'
 }
