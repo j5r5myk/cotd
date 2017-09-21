@@ -1,0 +1,64 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: cotd
+    name: cotd
+  spec:
+    replicas: 1
+    selector:
+      app: cotd
+      deploymentconfig: cotd
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/container.cotd.image.entrypoint: '["container-entrypoint","/usr/libexec/s2i/run"]'
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: cotd
+          deploymentconfig: cotd
+      spec:
+        containers:
+        - image: 172.30.1.1:5000/cotd-prod/cotd@sha256:496559ea13ed6a0d57ee8235f102251a4819b10afd90f72e7c8daa6fc38fefe1
+          imagePullPolicy: Always
+          name: cotd
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - cotd
+        from:
+          kind: ImageStreamTag
+          name: cotd:latest
+          namespace: cotd-prod
+      type: ImageChange
+  status: {}
+kind: List
+metadata: {}

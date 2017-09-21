@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: jws30-tomcat8-deployment
+metadata:
+  annotations:
+    description: Application template for JWS applications built using a Jenkins Pipeline
+    iconClass: icon-tomcat
+    tags: tomcat,tomcat8,java,jboss,xpaas
+    version: 1.2.0
+  name: jws30-tomcat8-deployment
+objects:
+- apiVersion: v1
+  kind: List
+  items:
+  - kind: ProjectRequest
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-dev
+      creationTimestam: null
+  - kind: ProjectRequest
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-stage
+      creationTimestam: null
+  - kind: ProjectRequest
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-prod
+      creationTimestam: null
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: The web server's http port.
+    labels:
+      application: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - port: 8080
+      targetPort: 8080
+    selector:
+      deploymentConfig: ${APP_NAME}
+- apiVersion: v1
+  id: ${APP_NAME}-http
+  kind: Route
+  metadata:
+    annotations:
+      description: Route for application's http service.
+    labels:
+      application: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    host: ${HOSTNAME_HTTP}
+    to:
+      name: ${APP_NAME}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      application: ${APP_NAME}
+    name: ${APP_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: v1
+  kind: DeploymentConfig
+ TODO put something here 
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      template: basic-tomcat-template
+    name: jenkins_edit
+    namespace: ${NAMESPACE}
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: ${SA_NAME}
+    namespace: ${SA_NAMESPACE}
+  userNames:
+  - system:serviceaccount:${SA_NAMESPACE}:${SA_NAME}
+parameters:
+- description: The name for the application.
+  name: APP_NAME
+  required: true
+  value: cotd
+- description: The namespace to deploy into
+  name: NAMESPACE
+  required: true
+- description: Name of a service account that can deploy to this project
+  name: SA_NAME
+  required: true
+  value: jenkins
+- description: Namespace of service account that can deploy to this project
+  name: SA_NAMESPACE
+  required: true
+- description: 'Custom hostname for http service route.  Leave blank for default hostname, e.g.: <application-name>-<project>.<default-domain-suffix>'
+  name: HOSTNAME_HTTP
