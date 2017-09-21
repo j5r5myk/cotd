@@ -45,8 +45,8 @@ node {
   stage("Promote to ${env.STAGE2}") {
     sh """
     ${env.OC_CMD} tag ${env.STAGE1}/${env.APP_NAME}:latest ${env.STAGE2}/${env.APP_NAME}:latest
-    ${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
     """
+//${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
   }
 }
 
