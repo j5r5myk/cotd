@@ -42,7 +42,8 @@ node {
   }
 }
 node {
-  stage("Promote to ${env.STAGE2}")
+  stage("Promote to ${env.STAGE2}") {
+  }
 }
 
 node {
