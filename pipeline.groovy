@@ -37,6 +37,7 @@ node {
 
 node {
   stage('Verify deployment to ${env.STAGE1}')     
+  sh "${env.OC_CMD} get dc"
   openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
   input "Promote application to val?"
 }
