@@ -43,6 +43,9 @@ node {
 }
 node {
   stage("Promote to ${env.STAGE2}") {
+    sh """
+    ${env.OC_CMD} tag ${env.STAGE1}/${env.APP_NAME}:latest ${env.STAGE2}/${env.APP_NAME}:latest
+    """
   }
 }
 
@@ -53,5 +56,6 @@ node {
 }
 
 node {
-  echo 'Promote to prod'
+  Stage("Promote to ${env.STAGE3}") {
+  }
 }
