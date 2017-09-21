@@ -31,7 +31,7 @@ node {
       sh """
         ${env.OC_CMD} get builds
         ${env.OC_CMD} start-build ${env.APP_NAME} --from-dir=oc-build --wait=true || exit 1
-        ${enc.OC_CMD} get builds
+        ${env.OC_CMD} get builds
       """
     }
     
