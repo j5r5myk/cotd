@@ -21,7 +21,7 @@ node('master') {
 }
 
 node {
-    echo 'Build cotd'
+    echo 'Building cotd'
     stage('SCM Checkout') {
       checkout scm
       //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
@@ -30,6 +30,7 @@ node {
     stage('Build Image') {
       sh """
         ${env.OC_CMD} get is -n cotd-dev
+        ${env.OC_CMD} start-build ${env.APP_NAME} --from-dir=oc-build --wait=true || exit 1
       """
     }
     
