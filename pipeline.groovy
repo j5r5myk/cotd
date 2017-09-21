@@ -50,13 +50,18 @@ node {
   }
 }
 
+
+
 node {
-  stage("Verify deployment to ${env.STAGE2}") {
-    openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE2}", verifyReplicacount: true)
+  stage("Promote to ${env.STAGE3}") {
+    sh """
+      ${env.OC_CMD} tag ${env.STAGE2}/${env.APP_NAME}:latest ${env.STAGE3}/${env.APP_NAME}:latest
+    """ 
   }
 }
 
 node {
-  stage("Promote to ${env.STAGE3}") {
+  stage("Verify deployment to ${env.STAGE3}") {
+    openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE3}", verifyReplicacount: true)
   }
 }
