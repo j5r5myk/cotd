@@ -57,6 +57,6 @@ node {
 }
 
 node {
-  Stage("Promote to ${env.STAGE3}") {
+  stage("Promote to ${env.STAGE3}") {
   }
 }
