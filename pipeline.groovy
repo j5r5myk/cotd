@@ -26,23 +26,23 @@ node {
     //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
   }
   stage('Build Image') {
-    try {
       sh """
         ${env.OC_CMD} get builds
         ${env.OC_CMD} start-build ${env.APP_NAME} --wait=true || exit 1
         ${env.OC_CMD} get builds
       """
-    } catch (err) {
-      echo "FAILURE but it's okay"
-    }
   }
     
 }
 
 node {
   stage("Verify deployment to ${env.STAGE1}") {    
-    openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
-    input "Promote application to val?"
+    try {
+      openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
+      input "Promote application to val?"
+    } catch (err) {
+      echo "FAILURE but it's okay!"
+    }
   }
 }
 node {
