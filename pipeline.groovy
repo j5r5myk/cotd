@@ -42,7 +42,9 @@ node {
       input "Promote application to val?"
     } catch (err) {
       echo "Creating deployment config..."
-      ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
+      sh """
+        ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
+      """
     }
   }
 }
