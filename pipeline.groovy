@@ -41,27 +41,36 @@ node {
       openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
       input "Promote application to val?"
     } catch (err) {
-      echo "Creating deployment config..."
+      echo "Creating deployment config and route..."
       sh """
         ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
+        ${env.OC_CMD} expose svc/cotd -n ${env.STAGE1}
       """
     }
   }
 }
 node {
   stage("Promote to ${env.STAGE2}") {
-    try {
-      sh """
-      ${env.OC_CMD} tag ${env.STAGE1}/${env.APP_NAME}:latest ${env.STAGE2}/${env.APP_NAME}:latest
-      """
-    } catch (err) {
-      echo "DC not created yet"
-      //${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
-    }
+    sh """
+    ${env.OC_CMD} tag ${env.STAGE1}/${env.APP_NAME}:latest ${env.STAGE2}/${env.APP_NAME}:latest
+    """
   }
 }
 
-
+node {
+  stage("Verify deployment to ${env.STAGE2}") {    
+    try {
+      openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE2}", verifyReplicacount: true)
+      input "Promote application to val?"
+    } catch (err) {
+      echo "Creating deployment config and route..."
+      sh """
+        ${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
+        ${env.OC_CMD} expose svc/cotd -n ${env.STAGE2}
+      """
+    }
+  }
+}
 
 node {
   stage("Promote to ${env.STAGE3}") {
@@ -73,6 +82,14 @@ node {
 
 node {
   stage("Verify deployment to ${env.STAGE3}") {
+  try {
     openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE3}", verifyReplicacount: true)
+  } catch (err) {
+    echo "Creating deployment config and route..."
+    sh """
+      ${env.OC_CMD} new-app ${env.STAGE3}/${env.APP_NAME}:latest -n ${env.STAGE3}
+      ${env.OC_CMD} expose svc/cotd -n ${env.STAGE3}
+      """
+    }
   }
 }
