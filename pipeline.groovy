@@ -13,17 +13,11 @@ node('master') {
   env.STAGE1 = "${projectBase}-dev"
   env.STAGE2 = "${projectBase}-val"
   env.STAGE3 = "${projectBase}-prod"
-
-//  sh(returnStdout: true, script: "${env.OC_CMD} get is jenkins-slave-image-mgmt --template=\'{{ .status.dockerImageRepository }}\' -n openshift > /tmp/jenkins-slave-image-mgmt.out")
-//  env.SKOPEO_SLAVE_IMAGE = readFile('/tmp/jenkins-slave-image-mgmt.out').trim()
-//  println "${env.SKOPEO_SLAVE_IMAGE}"
-
 }
 
 node {
   stage('SCM Checkout') {
     checkout scm
-    //sh "orig=\$(pwd); cd \$(dirname ${pomFileLocation}); git describe --tags; cd \$orig"
   }
   stage('Build Image') {
       sh """
@@ -32,14 +26,13 @@ node {
         ${env.OC_CMD} get builds
       """
   }
-    
 }
 
 node {
   stage("Verify deployment to ${env.STAGE1}") {    
     try {
       openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
-      input "Promote application to val?"
+      //input "Promote application to val?"
     } catch (err) {
       echo "Creating deployment config and route..."
       sh """
@@ -49,6 +42,7 @@ node {
     }
   }
 }
+
 node {
   stage("Promote to ${env.STAGE2}") {
     sh """
