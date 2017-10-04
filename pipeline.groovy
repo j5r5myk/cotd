@@ -41,7 +41,8 @@ node {
       openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE1}", verifyReplicacount: true)
       input "Promote application to val?"
     } catch (err) {
-      echo "FAILURE but it's okay!"
+      echo "Creating deployment config..."
+      ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
     }
   }
 }
@@ -53,7 +54,7 @@ node {
       """
     } catch (err) {
       echo "DC not created yet"
-      ${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
+      //${env.OC_CMD} new-app ${env.STAGE2}/${env.APP_NAME}:latest -n ${env.STAGE2}
     }
   }
 }
