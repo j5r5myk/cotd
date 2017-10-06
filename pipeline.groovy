@@ -20,11 +20,16 @@ node {
     checkout scm
   }
   stage('Build Image') {
+    try {
       sh """
-        ${env.OC_CMD} get builds
         ${env.OC_CMD} start-build ${env.APP_NAME} --wait=true || exit 1
-        ${env.OC_CMD} get builds
       """
+    } catch (err) {
+      echo "Creating build"
+      sh """
+        ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
+      """
+    }
   }
 }
 
