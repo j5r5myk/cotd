@@ -27,7 +27,7 @@ node {
     } catch (err) {
       echo "Creating build"
       sh """
-        ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME}:latest -n ${env.STAGE1}
+        ${env.OC_CMD} new-app ${env.STAGE1}/${env.APP_NAME} -n ${env.STAGE1}
       """
     }
   }
