@@ -53,7 +53,7 @@ node {
   stage("Verify deployment to ${env.STAGE2}") {    
     try {
       openshiftVerifyDeployment(deploymentConfig: "${env.APP_NAME}", namespace: "${STAGE2}", verifyReplicacount: true)
-      input "Promote application to val?"
+      //input "Promote application to val?"
     } catch (err) {
       echo "Creating deployment config and route..."
       sh """
